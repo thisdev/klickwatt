@@ -13,6 +13,8 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #solar-panel-container {
@@ -77,6 +79,22 @@
             cursor: not-allowed;
         }
 
+        #reset-game {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f1d6d5; /* Rot für den Reset-Button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #reset-game:hover {
+            background-color: #c79999; /* Dunkleres Rot beim Hover */
+        }
+
         @media (max-width: 600px) {
             #game-container {
                 padding: 10px;
@@ -102,6 +120,49 @@
             align-items: center;
             font-family: Arial, sans-serif;
             color: #666;
+        }
+
+        .dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .dialog-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        .dialog-content h2 {
+            margin-top: 0;
+        }
+        
+        .dialog-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        #reset-confirm {
+            background-color: #b0433b;
+            color: white;
+            border: none;
+        }
+        
+        #reset-cancel {
+            background-color: #38813a;
+            color: white;
+            border: none;
         }
 
         @media (max-width: 728px) {

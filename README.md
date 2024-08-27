@@ -11,7 +11,7 @@ KlickWatt: Verwandle Klicks in Wattstunden! Baue dein virtuelles Balkonkraftwerk
 - **Wechselrichter-Management**: Überwache den Zustand deines Wechselrichters und tausche ihn bei Bedarf aus.
 - **Visuelle Feedback**: Saisonale Bilder für die Solarpanels.
 - **Automatische Simulation**: Das Spiel läuft auch im Hintergrund weiter.
-- **Speichersystem**: Dein Fortschritt wird automatisch, alle 30 Sekunden, gespeichert.
+- **Speichersystem**: Dein Fortschritt wird automatisch, alle 10 Sekunden, gespeichert.
 - **Reset-Funktion**: Möglichkeit, das Spiel zurückzusetzen und von vorne zu beginnen.
 
 ## Zukünftige Entwicklung

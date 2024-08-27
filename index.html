@@ -34,6 +34,7 @@
         <button id="upgrade-btn" class="btn" onclick="buyPanel()">Weiteres Panel kaufen (69 €)</button>
         <button id="replace-inverter-btn" class="btn" onclick="replaceInverter()" disabled>Wechselrichter ersetzen (150
             €)</button>
+        <button id="reset-game">Spiel zurücksetzen</button>
         <div class="info-box-bottom">
             <div><a href="https://x.com/BitlagerPro" target="_blank">@bitlagerpro</a> | <a
                     href="https://github.com/thisdev/klickwatt" target="_blank">github repo</a></div>
@@ -44,166 +45,17 @@
         <p>Platzhalter für Bannerwerbung</p>
     </div>
 
-    <script>
-        let firstCall = true;
-        let totalEnergy = 0;
-        let balance = 50;
-        let panelCount = 2;
-        let days = 1;
-        let years = 0;
-        let currentSeason = 0;
-        let inverterHealth = 100;
-        let inverterAge = 0;
-        const seasons = ['Frühling', 'Sommer', 'Herbst', 'Winter'];
-        const seasonalProduction = [
-            [0.8, 2], // Frühling
-            [1.5, 2], // Sommer
-            [1.1, 1.8], // Herbst
-            [0.1, 0.8] // Winter
-        ];
+    <div id="reset-dialog" class="dialog" style="display: none;">
+        <div class="dialog-content">
+            <h2>Spiel zurücksetzen?</h2>
+            <p>Möchtest du wirklich das Spiel zurücksetzen? Dein gesamter Fortschritt wird gelöscht.</p>
+            <button id="reset-confirm">Ja, zurücksetzen</button>
+            <button id="reset-cancel">Abbrechen</button>
+        </div>
+    </div>
 
-        function updateDisplay() {
-            document.getElementById('total').textContent = totalEnergy.toFixed(1);
-            document.getElementById('money').textContent = balance.toFixed(2);
-            document.getElementById('panels').textContent = panelCount;
-            document.getElementById('days').textContent = days;
-            document.getElementById('years').textContent = years;
-            document.getElementById('current-season').textContent = seasons[currentSeason];
-            document.getElementById('inverter').textContent = inverterHealth;
-            document.getElementById('upgrade-btn').disabled = balance < 69;
-            document.getElementById('replace-inverter-btn').disabled = balance < 150 || inverterHealth === 100;
-        }
+    <script src="script.js"></script>
 
-        function updatePanelImage() {
-            const images = ['panel-spring', 'panel-summer', 'panel-autumn', 'panel-winter'];
-            images.forEach((id, index) => {
-                document.getElementById(id).style.display = index === currentSeason ? 'block' : 'none';
-            });
-        }
-
-        function showNotification(message, timeout) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            if (!timeout) {
-                setTimeout(() => {
-                    notification.textContent = '';
-                }, 3000);
-            } else {
-                setTimeout(() => {
-                    notification.textContent = '';
-                }, timeout);
-            }
-        }
-
-        function simulateDay() {
-            days++;
-            if (days > 360) {
-                years++
-                days = 1;
-                inverterAge++;
-            }
-
-            if (firstCall) {
-                showNotification(
-                    "Klicke auf das Bild, um einen weiteren Tag zu simulieren oder lass einfach die Zeit verstreichen",
-                    5000);
-                firstCall = false;
-            }
-
-            const oldSeason = currentSeason;
-            currentSeason = Math.floor((days - 1) / 90);
-
-            const [min, max] = seasonalProduction[currentSeason];
-            const dailyProduction = Math.random() * (max - min) + min;
-            const generatedEnergy = panelCount * dailyProduction * (inverterHealth / 100);
-
-            totalEnergy += generatedEnergy;
-            const earnings = generatedEnergy * 0.063; // 6.3 cents per kWh
-            balance += earnings;
-
-            // Wechselrichter-Verschleiß
-            if (inverterAge >= 15 && Math.random() < 0.001) {
-                inverterHealth = Math.max(0, inverterHealth - Math.floor(Math.random() * 20));
-                if (inverterHealth < 50) {
-                    showNotification("Der Wechselrichter altert. Ersatz in Betracht ziehen!");
-                }
-            }
-            if (inverterAge >= 20 && inverterHealth > 0) {
-                inverterHealth = 0;
-                showNotification("Der Wechselrichter ist komplett ausgefallen und muss ersetzt werden!");
-            }
-
-            updateDisplay();
-            updatePanelImage();
-
-            if (currentSeason !== oldSeason) {
-                showNotification(`Neue Jahreszeit: ${seasons[currentSeason]}!`);
-            }
-        }
-
-        function buyPanel() {
-            if (balance >= 69) {
-                balance -= 69;
-                panelCount++;
-                updateDisplay();
-                showNotification(`Neues Solarpanel gekauft! Du hast jetzt ${panelCount} Panels.`);
-            }
-        }
-
-        function replaceInverter() {
-            if (balance >= 150) {
-                balance -= 150;
-                inverterHealth = 100;
-                inverterAge = 0;
-                updateDisplay();
-                showNotification("Wechselrichter wurde erfolgreich ersetzt!");
-            }
-        }
-
-        // Spielstand speichern
-        function saveGame() {
-            const gameState = {
-                totalEnergy: totalEnergy,
-                balance: balance,
-                panelCount: panelCount,
-                days: days,
-                inverterHealth: inverterHealth,
-                inverterAge: inverterAge
-                // ... andere relevante Variablen
-            };
-            localStorage.setItem('balkonkraftwerkSave', JSON.stringify(gameState));
-        }
-
-        // Spielstand laden
-        function loadGame() {
-            const savedState = localStorage.getItem('balkonkraftwerkSave');
-            if (savedState) {
-                const gameState = JSON.parse(savedState);
-                totalEnergy = gameState.totalEnergy;
-                balance = gameState.balance;
-                panelCount = gameState.panelCount;
-                days = gameState.days;
-                inverterHealth = gameState.inverterHealth;
-                inverterAge = gameState.inverterAge;
-                // ... andere Variablen setzen
-                updateDisplay(); // Aktualisieren Sie die Anzeige mit den geladenen Werten
-            }
-        }
-
-        document.getElementById('solar-panel-container').addEventListener('click', simulateDay);
-
-        // Automatische Simulation
-        setInterval(simulateDay, 1000); // Simuliert einen Tag jede Sekunde
-        // Automatisches Speichern alle 30 Sekunden
-        setInterval(saveGame, 30000);
-
-        // Initiale Anzeige
-        updateDisplay();
-        updatePanelImage();
-
-        // Laden beim Start des Spiels
-        window.onload = loadGame;
-    </script>
 </body>
 
 </html>
